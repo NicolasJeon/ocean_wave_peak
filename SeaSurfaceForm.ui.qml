@@ -2,6 +2,7 @@ import QtQuick
 import QtGraphs
 import QtQuick3D.Helpers
 import QtQuick3D
+import SeaAnalysis 1.0
 
 Item {
     property alias surfaceSeriesId : surfaceSeriesId
@@ -26,6 +27,7 @@ Item {
 
         environment: ExtendedSceneEnvironment {
             backgroundMode: ExtendedSceneEnvironment.Color
+            clearColor: "black"
             tonemapMode: ExtendedSceneEnvironment.TonemapModeNone
             glowEnabled: true
             glowStrength: 0.8
@@ -59,14 +61,14 @@ Item {
             itemLabelFormat: "Wave Height: (@xLabel, @zLabel) @yLabel Meters"
 
             drawMode: Surface3DSeries.DrawSurface
-            textureFile: "/Users/jammingyu/Workspace/sea_analysis/image/ocean_texture.jpg"
+            textureFile: "SeaAnalysis/image/ocean_texture.jpg"
         }
 
         customItemList: [
             Custom3DItem {
                 id: markerId
-                meshFile: "/Users/jammingyu/Workspace/sea_analysis/mesh/buoy.obj"
-                textureFile: "/Users/jammingyu/Workspace/sea_analysis/mesh/coral.jpg"
+                meshFile: "SeaAnalysis/mesh/buoy.obj"
+                textureFile: "SeaAnalysis/mesh/coral.jpg"
                 scaling: Qt.vector3d(0.15, 0.15, 0.15)
                 visible: false // Start hidden
             },
