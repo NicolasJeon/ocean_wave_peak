@@ -75,6 +75,7 @@ Item {
             Custom3DLabel {
                 id: labelId
                 backgroundColor: "black"
+                borderVisible: false
                 textColor: "orange"
                 font.bold: true
                 visible: false
