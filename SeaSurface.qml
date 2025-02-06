@@ -1,42 +1,32 @@
 import QtQuick
 
 SeaSurfaceForm {
-    WaveDataProvider {
-        id: waveDataProviderId
+    WaveDataProxy {
+        id: waveDataProxyId
     }
 
     Component.onCompleted: {
-        surfaceSeriesId.dataProxy = waveDataProviderId.waveProxy();
+        surfaceSeriesId.dataProxy = waveDataProxyId;
         console.log("Data Proxy Set:", surfaceSeriesId.dataProxy !== null);
-        updateTimer.start();
-    }
-
-    Timer {
-        id: updateTimer
-        interval: 25 // Update interval in milliseconds (e.g., 1 second)
-        repeat: true   // Keep repeating the timer
-        onTriggered: {
-            waveDataProviderId.update(); // Call the update function of WaveDataProvider
-        }
     }
 
     Connections {
-        target: waveDataProviderId
+        target: waveDataProxyId
         function onHighestPeakChanged () {
             markerId.visible = true;
             labelId.visible = true;
 
             // Animate the marker's position
             markerPositionAnimation.from = markerId.position
-            markerPositionAnimation.to = waveDataProviderId.highestPeakPos
+            markerPositionAnimation.to = waveDataProxyId.highestPeakPos
             markerPositionAnimation.running = true
 
             // Animate the label's position
             labelPositionAnimation.from = labelId.position
-            labelPositionAnimation.to = waveDataProviderId.highestPeakLabelPos
+            labelPositionAnimation.to = waveDataProxyId.highestPeakLabelPos
             labelPositionAnimation.running = true
 
-            labelId.text = " Highest Peak: " + waveDataProviderId.highestPeakPos.y.toFixed(1) + " M ";
+            labelId.text = " Highest Peak: " + waveDataProxyId.highestPeakPos.y.toFixed(1) + " M ";
         }
     }
 

@@ -1,5 +1,5 @@
-#ifndef WAVEDATAWORKER_H
-#define WAVEDATAWORKER_H
+#ifndef WAVEDATAGENERATOR_H
+#define WAVEDATAGENERATOR_H
 
 #include <QDebug>
 #include <QObject>
@@ -10,21 +10,24 @@
 
 constexpr int CACHE_SIZE = 5;
 
-class WaveDataWorker : public QObject
+class WaveDataGenerator : public QObject
 {
     Q_OBJECT
 public:
-    explicit WaveDataWorker(QObject *parent = nullptr);
-    ~WaveDataWorker();
+    explicit WaveDataGenerator(QObject *parent = nullptr);
+    ~WaveDataGenerator();
 
 public:
-    void startDataGeneration();
-    void stopDataGeneration();
+    void startGeneration();
+    void stopGeneration();
     bool dataAvailable();
     std::unique_ptr<QSurfaceDataArray> fetchData();
 
 private:
     void generateData();
+
+signals:
+    void dataGenerated();
 
 private:
     QQueue<QSurfaceDataArray*> m_dataCache;
@@ -34,4 +37,4 @@ private:
     float m_wavePhase = 0.0;
 };
 
-#endif // WAVEDATAWORKER_H
+#endif // WAVEDATAGENERATOR_H

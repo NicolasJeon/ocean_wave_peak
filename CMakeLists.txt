@@ -19,7 +19,7 @@ qt_add_qml_module(appsea_analysis
     QML_FILES
         Main.qml SeaSurfaceForm.ui.qml SeaSurface.qml
     SOURCES
-        WaveDataProvider.h WaveDataProvider.cpp WaveDataWorker.h WaveDataWorker.cpp
+    WaveDataProxy.h WaveDataProxy.cpp WaveDataGenerator.h WaveDataGenerator.cpp
     RESOURCES
         image/ocean_texture.jpg mesh/buoy.obj mesh/coral.jpg
 )

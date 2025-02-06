@@ -1,5 +1,5 @@
-#ifndef WAVEDATAPROVIDER_H
-#define WAVEDATAPROVIDER_H
+#ifndef WAVEDATAPROXY_H
+#define WAVEDATAPROXY_H
 
 #include <QDebug>
 #include <QSurfaceDataProxy>
@@ -7,9 +7,9 @@
 #include <QtQml>
 #include <QThread>
 #include <QVector3D>
-#include "WaveDataWorker.h"
+#include "WaveDataGenerator.h"
 
-class WaveDataProvider : public QObject
+class WaveDataProxy : public QSurfaceDataProxy
 {
     Q_OBJECT
     QML_ELEMENT
@@ -18,29 +18,26 @@ class WaveDataProvider : public QObject
     Q_PROPERTY(QVector3D highestPeakLabelPos READ highestPeakLabelPos CONSTANT)
 
 public:
-    WaveDataProvider();
+    WaveDataProxy();
 
     QVector3D highestPeakPos() const { return m_highestPeakPos; }
     QVector3D highestPeakLabelPos() const { return m_highestPeakLabelPos; }
 
-    Q_INVOKABLE void update();
-    Q_INVOKABLE QSurfaceDataProxy* waveProxy();
-
-    QVector3D findHighestPeak(const QSurfaceDataArray &surfaceData);
+    void update();
 
 private:
+    QVector3D findHighestPeak(const QSurfaceDataArray &surfaceData);
     void setHighestPeak(const QVector3D &peak);
 
 signals:
     void highestPeakChanged();
 
 private:
-    std::shared_ptr<QSurfaceDataProxy> m_waveProxy;
+    QTimer m_timer;
 
-    WaveDataWorker worker;
-    QThread m_workerThread;
+    WaveDataGenerator m_dataGen;
     QVector3D m_highestPeakPos;
     QVector3D m_highestPeakLabelPos;
 };
 
-#endif // WAVEDATAPROVIDER_H
+#endif // WAVEDATAPROXY_H

@@ -1,33 +1,28 @@
-#include "WaveDataProvider.h"
+#include "WaveDataProxy.h"
 #include <QSurface3DSeries>
 #include <QCustom3DItem>
 
-WaveDataProvider::WaveDataProvider()
-    : m_waveProxy(std::make_shared<QSurfaceDataProxy>())
+WaveDataProxy::WaveDataProxy()
 {
     qDebug() << "Constructor of WaveDataProvider";
-    worker.startDataGeneration();
+    m_dataGen.startGeneration();
+
+    connect(&m_dataGen, &WaveDataGenerator::dataGenerated, this, &WaveDataProxy::update);
+    m_timer.start(25);
 }
 
-void WaveDataProvider::update()
+void WaveDataProxy::update()
 {
-    if (worker.dataAvailable()) {
-        std::unique_ptr<QSurfaceDataArray> surfaceData = worker.fetchData();
-        if (surfaceData) {
-            m_waveProxy->resetArray(*surfaceData); // Pass the data as needed
+    std::unique_ptr<QSurfaceDataArray> surfaceData = m_dataGen.fetchData();
+    if (surfaceData) {
+        this->resetArray(*surfaceData); // Pass the data as needed
 
-            QVector3D peak = findHighestPeak(*surfaceData);
-            setHighestPeak(peak);
-        }
+        QVector3D peak = findHighestPeak(*surfaceData);
+        setHighestPeak(peak);
     }
 }
 
-QSurfaceDataProxy* WaveDataProvider::waveProxy()
-{
-    return m_waveProxy.get();
-}
-
-QVector3D WaveDataProvider::findHighestPeak(const QSurfaceDataArray &surfaceData)
+QVector3D WaveDataProxy::findHighestPeak(const QSurfaceDataArray &surfaceData)
 {
     QVector3D highestPoint;
     float maxHeight = -std::numeric_limits<float>::infinity();
@@ -46,7 +41,7 @@ QVector3D WaveDataProvider::findHighestPeak(const QSurfaceDataArray &surfaceData
     return highestPoint;
 }
 
-void WaveDataProvider::setHighestPeak(const QVector3D &peak)
+void WaveDataProxy::setHighestPeak(const QVector3D &peak)
 {
     if (m_highestPeakPos != peak) {
         m_highestPeakPos = peak;

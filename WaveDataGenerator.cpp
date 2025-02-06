@@ -1,23 +1,23 @@
-#include "WaveDataWorker.h"
+#include "WaveDataGenerator.h"
 #include <QRandomGenerator>
 #include <QtConcurrent>
 
-WaveDataWorker::WaveDataWorker(QObject *parent)
+WaveDataGenerator::WaveDataGenerator(QObject *parent)
     : QObject(parent), m_running(true)
 {
     qDebug() << "Constructor of WaveDataWorker";
 }
 
-WaveDataWorker::~WaveDataWorker() {
+WaveDataGenerator::~WaveDataGenerator() {
     qDebug() << "Destructor of WaveDataWorker";
-    stopDataGeneration();
+    stopGeneration();
     QMutexLocker locker(&m_cacheMutex);
     while (!m_dataCache.isEmpty()) {
         delete m_dataCache.dequeue();
     }
 }
 
-void WaveDataWorker::startDataGeneration() {
+void WaveDataGenerator::startGeneration() {
     QtConcurrent::run([this]() {
         while (m_running) {
             generateData();
@@ -26,17 +26,17 @@ void WaveDataWorker::startDataGeneration() {
     });
 }
 
-void WaveDataWorker::stopDataGeneration() {
+void WaveDataGenerator::stopGeneration() {
     QMutexLocker locker(&m_cacheMutex);
     m_running = false;
     m_cacheCondition.wakeAll();
 }
 
-bool WaveDataWorker::dataAvailable() {
+bool WaveDataGenerator::dataAvailable() {
     return m_dataCache.size() != 0;
 }
 
-std::unique_ptr<QSurfaceDataArray> WaveDataWorker::fetchData() {
+std::unique_ptr<QSurfaceDataArray> WaveDataGenerator::fetchData() {
     QMutexLocker locker(&m_cacheMutex);
     if (m_dataCache.isEmpty()) {
         return nullptr;
@@ -47,7 +47,7 @@ std::unique_ptr<QSurfaceDataArray> WaveDataWorker::fetchData() {
     return data;
 }
 
-void WaveDataWorker::generateData() {
+void WaveDataGenerator::generateData() {
     const int rows = 120;
     const int columns = 120;
 
@@ -103,6 +103,8 @@ void WaveDataWorker::generateData() {
     }
 
     m_dataCache.enqueue(dataArray);
+
+    emit dataGenerated();
 
     // Update phase for animation
     m_wavePhase += 0.03f; // Increment phase for wave motion
